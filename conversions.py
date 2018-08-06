@@ -14,4 +14,3 @@ def stripfile(filepath, listofterms):
             for i in listofterms:
                 if line.startswith(i):
                     f_out.write(line)
-
