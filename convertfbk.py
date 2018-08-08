@@ -1,5 +1,6 @@
 from conversions import stripfile
 import numpy as np
+import os
 
 testfile = '\\raw\\Site01-152.fbk'
 
@@ -40,9 +41,20 @@ def addprismht(fbklist):
 
 def tidyfbk(filepath):
     with open(filepath) as f:
+        # Remove non-obs data
         stage1 = stripfile(f, ['PRISM', 'STN', 'F1', 'F2'])
+        # Add prism heights to each observation
         stage2 = addprismht(stage1)
-        stage3 = stripfile(f, ['STN', 'F1', 'F2'])
-    return stage3
-
-
+        # Remove Prism Records
+        stage3 = stripfile(stage2, ['STN', 'F1', 'F2'])
+        # Write current stage to file
+        filepathin, ext = os.path.splitext(filepath)
+        filepathout = filepathin + '_partial1' + ext
+        with open(filepathout, 'w+') as f_out:
+            for line in stage3:
+                f_out.write(line)
+        # Split obs
+        stage4 = []
+        for num, i in enumerate(stage3):
+            stage4.append(stage3[num].split())
+    return stage4
